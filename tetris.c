@@ -174,9 +174,9 @@ int main()
         {
             if(pY + _piece.yOffset[i] >= height - 1
             || 
-            (board.square[(pY + _piece.yOffset[i])*10 + _piece.xOffset[i]] >= 0 
+            (board.square[(pY + _piece.yOffset[i])*10 + _piece.xOffset[i] + pX + 10] >= 0 
             && 
-            (pY + _piece.yOffset[i])*10 + _piece.xOffset[i] - 10 > 0) 
+            (pY + _piece.yOffset[i])*10 + _piece.xOffset[i] + pX + 10 > 0) 
             ){
                 generatePiece = true;
                 for(int j = 0; j < 4; j++)
