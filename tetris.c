@@ -107,12 +107,15 @@ int main()
     int pY = 0;
     bool game = true;
     int ticker = 0;
-    int maxTick = 3;
+    int maxTick = 2;
 
     int width = 10;
     int height = 20;
 
     bool generatePiece = true;
+
+    int score = 0;
+    int scores[4] = {40, 100, 300, 1200};
 
     while(game)
     {
@@ -170,6 +173,7 @@ int main()
             if(pX + _piece.xOffset[i] < 0)
                 pX++;
         }
+        int lines = 0;
         for (int i = 0; i < 4; i++)
         {
             if(pY + _piece.yOffset[i] >= height)
@@ -187,7 +191,7 @@ int main()
                 }
                 pX = 0;
                 pY = 0;
-
+                
                 for(int row = 0; row < 20; row++)
                 {
                     bool delRow = true;
@@ -201,6 +205,7 @@ int main()
                     }
                     if (delRow)
                     {
+                        lines++;
                         for(int col = 0; col < 10; col++)
                         {
                             board.square[row * 10 + col] = -1;
@@ -241,8 +246,13 @@ int main()
                 }
             }
         }
-
+        if (lines > 0)
+        {
+            score += scores[lines - 1];
+        }
+        
         int pos;
+        printf("\t|  \x1B[1m%sT%sE%sT%sR%sI%sS%s  |", BLU, MAG, RED, YEL, GRN, CYN, RESET);
         putchar('\n');
         for (int y = 0; y < 20; y++)
         {
@@ -279,19 +289,43 @@ int main()
                 }
             }
             putchar('|');
+            if(y == 0)
+            {
+                putchar('\t');
+                printf("\x1B[1m");
+                printf("SCORE");
+                printf(RESET);
+            }
+            if(y == 1)
+            {
+                putchar('\t');
+                printf("\x1B[1m");
+                printf("%d", score);
+                printf(RESET);
+            }
             printf("\n");
             
         }
-
         printf(RESET);
-        for(int i = 0; i < 4; i++)
+        //for(int i = 0; i < 4; i++)
+        //{
+        //    printf("%d, %d\n", _piece.xOffset[i], _piece.yOffset[i]);
+        //}
+        //printf("%d, %d\n", pX, pY);
+
+        for (int i = 0; i < 10; i++)
         {
-            printf("%d, %d\n", _piece.xOffset[i], _piece.yOffset[i]);
+            if(board.square[i] > 0)
+            {
+                game = false;
+                break;
+            }
         }
-        printf("%d, %d\n", pX, pY);
 
         Sleep(1000/10);
 
     }
+    printf("\t| %sYou lost%s |", RED, RESET);
+    
     return 0;
 }
