@@ -107,7 +107,7 @@ int main()
     int pY = 0;
     bool game = true;
     int ticker = 0;
-    int maxTick = 1;
+    int maxTick = 3;
 
     int width = 10;
     int height = 20;
@@ -172,6 +172,8 @@ int main()
         }
         for (int i = 0; i < 4; i++)
         {
+            if(pY + _piece.yOffset[i] >= height)
+                pY--;
             if(pY + _piece.yOffset[i] >= height - 1
             || 
             (board.square[(pY + _piece.yOffset[i])*10 + _piece.xOffset[i] + pX + 10] >= 0 
@@ -185,14 +187,67 @@ int main()
                 }
                 pX = 0;
                 pY = 0;
+
+                for(int row = 0; row < 20; row++)
+                {
+                    bool delRow = true;
+                    for(int col = 0; col < 10; col++)
+                    {
+                        if (board.square[row * 10 + col] <= 0)
+                        {
+                            delRow = false;
+                            break;
+                        }
+                    }
+                    if (delRow)
+                    {
+                        for(int col = 0; col < 10; col++)
+                        {
+                            board.square[row * 10 + col] = -1;
+                        }
+                        for(int col = 0; col < 10; col++)
+                        {
+                            for(int _row = row; _row > 1; _row--)
+                            {
+                                board.square[_row * 10 + col] = board.square[_row * 10 + col -10];
+                                board.square[_row * 10 + col -10] = -1;
+                            }
+                        }
+                    }
+                }
+                for(int row = 19; row > 1; row--)
+                {
+                    bool fallRow = true;
+                    for(int col = 0; col < 10; col++)
+                    {
+                        if (board.square[row * 10 + col] > 0)
+                        {
+                            fallRow = false;
+                            break;
+                        }
+                    }
+                    if (fallRow)
+                    {
+                        for(int col = 0; col < 10; col++)
+                        {
+                            for(int _row = row; _row > 1; _row--)
+                            {
+                                board.square[_row * 10 + col] = board.square[_row * 10 + col -10];
+                                board.square[_row * 10 + col -10] = -1;
+                            }
+                        }
+                    }
                 break;
+                }
             }
         }
 
         int pos;
-        putchar('\t');
+        putchar('\n');
         for (int y = 0; y < 20; y++)
         {
+            putchar('\t');
+            putchar('|');
             for (int x = 0; x < width; x++)
             {
                 bool renderO = false;
@@ -211,6 +266,7 @@ int main()
                 {
                     printf("%s", colors[color]);
                     putchar('0');
+                    printf(RESET);
                 }
                 else
                 {
@@ -222,8 +278,9 @@ int main()
                         putchar('.');
                 }
             }
+            putchar('|');
             printf("\n");
-            putchar('\t');
+            
         }
 
         printf(RESET);
