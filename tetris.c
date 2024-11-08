@@ -119,7 +119,7 @@ int main()
 
     while(game)
     {
-        system("cls");
+        printf("\033[H\033[J");
         //get player input
         //char ch[10];
 
@@ -252,6 +252,10 @@ int main()
         }
         
         int pos;
+
+        clock_t t; 
+        t = clock();
+
         printf("\t|  \x1B[1m%sT%sE%sT%sR%sI%sS%s  |", BLU, MAG, RED, YEL, GRN, CYN, RESET);
         putchar('\n');
         for (int y = 0; y < 20; y++)
@@ -307,6 +311,9 @@ int main()
             
         }
         printf(RESET);
+        t = clock() - t; 
+        double time_taken = ((double)t)/CLOCKS_PER_SEC;
+        printf("\nfps: %f", 1/time_taken);
         //for(int i = 0; i < 4; i++)
         //{
         //    printf("%d, %d\n", _piece.xOffset[i], _piece.yOffset[i]);
