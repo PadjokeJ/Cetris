@@ -119,7 +119,7 @@ int main()
 
     while(game)
     {
-        printf("\033[H\033[J");
+        
         //get player input
         //char ch[10];
 
@@ -187,7 +187,7 @@ int main()
                 generatePiece = true;
                 for(int j = 0; j < 4; j++)
                 {
-                    board.square[(_piece.yOffset[j] + pY) * 10 + _piece.xOffset[j] + pX] = 1;
+                    board.square[(_piece.yOffset[j] + pY) * 10 + _piece.xOffset[j] + pX] = color;
                 }
                 pX = 0;
                 pY = 0;
@@ -197,7 +197,7 @@ int main()
                     bool delRow = true;
                     for(int col = 0; col < 10; col++)
                     {
-                        if (board.square[row * 10 + col] <= 0)
+                        if (board.square[row * 10 + col] < 0)
                         {
                             delRow = false;
                             break;
@@ -255,7 +255,7 @@ int main()
 
         clock_t t; 
         t = clock();
-
+        printf("\033[H\033[J");
         printf("\t|  \x1B[1m%sT%sE%sT%sR%sI%sS%s  |", BLU, MAG, RED, YEL, GRN, CYN, RESET);
         putchar('\n');
         for (int y = 0; y < 20; y++)
@@ -284,12 +284,19 @@ int main()
                 }
                 else
                 {
-                    printf(RESET);
+                    
                     pos = y * 10 + x;
-                    if(board.square[pos] > 0)
-                        putchar('z');
+                    if(board.square[pos] >= 0)
+                    {
+                        printf("%s", colors[board.square[y * 10 + x]]);
+                        putchar('&');
+                        printf(RESET);
+                    }
                     else
+                    {
+                        printf(RESET);
                         putchar('.');
+                    }
                 }
             }
             putchar('|');
