@@ -16,6 +16,8 @@
 #define WHT   "\x1B[37m"
 #define RESET "\x1B[0m"
 
+#define gotoxy(x,y) printf("\033[%d;%dH", (y), (x))
+
 char* colors[] = 
 {
     RED,
@@ -117,9 +119,12 @@ int main()
     int score = 0;
     int scores[4] = {40, 100, 300, 1200};
 
+    int next = rand() % 6;
+
     while(game)
     {
-        
+        clock_t t; 
+        t = clock();
         //get player input
         //char ch[10];
 
@@ -127,7 +132,8 @@ int main()
         {
             int pX = 5;
             int pY = 0;
-            color = rand() % 6;
+            color = next;
+            next = rand() % 6;
             _piece = listOfPieces[color];
             generatePiece = false;
         }
@@ -189,8 +195,8 @@ int main()
                 {
                     board.square[(_piece.yOffset[j] + pY) * 10 + _piece.xOffset[j] + pX] = color;
                 }
-                pX = 0;
-                pY = 0;
+                pX = 4;
+                pY = -1;
                 
                 for(int row = 0; row < 20; row++)
                 {
@@ -253,13 +259,12 @@ int main()
         
         int pos;
 
-        clock_t t; 
-        t = clock();
         printf("\033[H\033[J");
+        
         printf("\t|  \x1B[1m%sT%sE%sT%sR%sI%sS%s  |", BLU, MAG, RED, YEL, GRN, CYN, RESET);
-        putchar('\n');
         for (int y = 0; y < 20; y++)
         {
+            printf("              \n");
             putchar('\t');
             putchar('|');
             for (int x = 0; x < width; x++)
@@ -314,13 +319,23 @@ int main()
                 printf("%d", score);
                 printf(RESET);
             }
-            printf("\n");
+            
             
         }
         printf(RESET);
-        t = clock() - t; 
-        double time_taken = ((double)t)/CLOCKS_PER_SEC;
-        printf("\nfps: %f", 1/time_taken);
+
+        // show next piece
+        gotoxy(22, 5);
+        printf("\t\x1B[1mNEXT:%s", RESET);
+        struct piece nextPiece = listOfPieces[next];
+        for(int i = 0; i < 4; i++)
+        {
+            gotoxy(27 + nextPiece.xOffset[i], 8 + nextPiece.yOffset[i]);
+            printf(RESET);
+            printf("%s0", colors[next]);
+        }
+        printf(RESET);
+        
         //for(int i = 0; i < 4; i++)
         //{
         //    printf("%d, %d\n", _piece.xOffset[i], _piece.yOffset[i]);
@@ -335,10 +350,17 @@ int main()
                 break;
             }
         }
-
-        Sleep(1000/10);
+        gotoxy(0, 23);
+        t = clock() - t; 
+        double time_taken = ((double)t)/CLOCKS_PER_SEC;
+        printf("\t\x1B[1mfps: %f%s\n", 1 / time_taken, RESET);
+        if(1000/10 - (1000*time_taken) >= 0)
+            Sleep(1000/10 - (1000*time_taken));
+        else
+           Sleep(1000/10); 
 
     }
+    gotoxy(0, 22);
     printf("\t| %sYou lost%s |", RED, RESET);
     
     return 0;
