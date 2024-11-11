@@ -194,21 +194,27 @@ int main()
         }
         #endif
         #ifdef __unix__
-	int ch = getch();
-	if (ch != ERR){
+	    int ch = getch();
+	    if (ch != ERR){
             if (ch == KEY_UP){
-	        //rotate
+	            int foo;
+                for (int i = 0; i < 4; i++)
+                {
+                    foo = _piece.xOffset[i];
+                    _piece.xOffset[i] = -_piece.yOffset[i];
+                    _piece.yOffset[i] = foo;
+                }
+	        }
+	        if (ch == KEY_LEFT){
+                    pX--;
+	        }
+	        if (ch == KEY_RIGHT){
+                    pX++;
+	        }
+	        if (ch == KEY_DOWN){
+                    pY++;
+	        }
 	    }
-	    if (ch == KEY_LEFT){
-                pX--;
-	    }
-	    if (ch == KEY_RIGHT){
-                pX++;
-	    }
-	    if (ch == KEY_DOWN){
-                pY++;
-	    }
-	}
         #endif
         ticker++;
         if(ticker > maxTick)
@@ -304,14 +310,12 @@ int main()
         
         int pos;
 
-        print("\033[H\033[J");
+        printf("\033[H\033[J");
         
-        print("\t|  \x1B[1m%sT%sE%sT%sR%sI%sS%s  |", BLU, MAG, RED, YEL, GRN, CYN, RESET);
+        printf("\t|  \x1B[1m%sT%sE%sT%sR%sI%sS%s  |", BLU, MAG, RED, YEL, GRN, CYN, RESET);
         for (int y = 0; y < 20; y++)
         {
-            print("\n");
-            print("\t");
-            print("|");
+            print("\n\t|");
             for (int x = 0; x < width; x++)
             {
                 bool renderO = false;
@@ -328,9 +332,9 @@ int main()
                 }
                 if (renderO)
                 {
-                    print("%s", colors[color]);
+                    printf("%s", colors[color]);
                     print("0");
-                    print(RESET);
+                    printf(RESET);
                 }
                 else
                 {
@@ -338,13 +342,13 @@ int main()
                     pos = y * 10 + x;
                     if(board.square[pos] >= 0)
                     {
-                        print("%s", colors[board.square[y * 10 + x]]);
+                        printf("%s", colors[board.square[y * 10 + x]]);
                         print("&");
-                        print(RESET);
+                        printf(RESET);
                     }
                     else
                     {
-                        print(RESET);
+                        printf(RESET);
                         print(".");
                     }
                 }
@@ -353,15 +357,15 @@ int main()
             if(y == 0)
             {
                 print("\t");
-                print("\x1B[1m");
+                printf("\x1B[1m");
                 print("SCORE");
-                print(RESET);
+                printf(RESET);
             }
             if(y == 1)
             {
                 print("\t");
-                print("\x1B[1m");
-                print("%d", score);
+                printf("\x1B[1m");
+                printf("%d", score);
                 print(RESET);
             }
             
@@ -371,12 +375,15 @@ int main()
 
         // show next piece
         gotoxy(22, 5);
-        print("\t\x1B[1mNEXT:%s", RESET);
+        print("\t");
+        printf("\x1B[1m");
+        print("NEXT:");
+        printf(RESET);
         struct piece nextPiece = listOfPieces[next];
         for(int i = 0; i < 4; i++)
         {
             gotoxy(27 + nextPiece.xOffset[i], 8 + nextPiece.yOffset[i]);
-            print(RESET);
+            printf(RESET);
             print("%s0", colors[next]);
         }
         print(RESET);
@@ -398,7 +405,7 @@ int main()
         gotoxy(0, 23);
         t = clock() - t; 
         double time_taken = ((double)t)/CLOCKS_PER_SEC;
-        print("\t\x1B[1mfps: %f%s\n", 1 / time_taken, RESET);
+        printf("\t\x1B[1mfps: %f%s\n", 1 / time_taken, RESET);
         if(1000/10 - (1000*time_taken) >= 0)
             Sleep(1000/10 - (1000*time_taken));
         else
