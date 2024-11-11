@@ -21,7 +21,7 @@
 #define WHT   "\x1B[37m"
 #define RESET "\x1B[0m"
 
-#define gotoxy(x,y) printf("\033[%d;%dH", (y), (x))
+#define gotoxy(x,y) print("\033[%d;%dH", (y), (x))
 
 char* colors[] = 
 {
@@ -53,6 +53,32 @@ struct Board
 #ifdef __unix__
 #define Sleep(t) (nanosleep((const struct timespec[]){{0, 1000000L*(t)}}, NULL))
 #endif
+
+void print(const char *format, ...){
+    va_list args;
+    va_start(args, format);
+    #ifdef _WIN32
+        vprintf(format, args);
+    #endif
+    #ifdef __unix__
+        vprintw(format, args);
+        refresh();
+    #endif
+
+    va_end(args);
+}
+
+void put(int str)
+{
+    #ifdef _WIN32
+        putchar(str);
+    #endif
+    #ifdef __unix__
+        addch(str);
+    #endif
+}
+
+
 
 int main()
 {
@@ -290,14 +316,14 @@ int main()
         
         int pos;
 
-        printf("\033[H\033[J");
+        print("\033[H\033[J");
         
-        printf("\t|  \x1B[1m%sT%sE%sT%sR%sI%sS%s  |", BLU, MAG, RED, YEL, GRN, CYN, RESET);
+        print("\t|  \x1B[1m%sT%sE%sT%sR%sI%sS%s  |", BLU, MAG, RED, YEL, GRN, CYN, RESET);
         for (int y = 0; y < 20; y++)
         {
-            printf("\n");
-            putchar('\t');
-            putchar('|');
+            print("\n");
+            put('\t');
+            put('|');
             for (int x = 0; x < width; x++)
             {
                 bool renderO = false;
@@ -314,9 +340,9 @@ int main()
                 }
                 if (renderO)
                 {
-                    printf("%s", colors[color]);
-                    putchar('0');
-                    printf(RESET);
+                    print("%s", colors[color]);
+                    put('0');
+                    print(RESET);
                 }
                 else
                 {
@@ -324,54 +350,54 @@ int main()
                     pos = y * 10 + x;
                     if(board.square[pos] >= 0)
                     {
-                        printf("%s", colors[board.square[y * 10 + x]]);
-                        putchar('&');
-                        printf(RESET);
+                        print("%s", colors[board.square[y * 10 + x]]);
+                        put('&');
+                        print(RESET);
                     }
                     else
                     {
-                        printf(RESET);
-                        putchar('.');
+                        print(RESET);
+                        put('.');
                     }
                 }
             }
-            putchar('|');
+            put('|');
             if(y == 0)
             {
-                putchar('\t');
-                printf("\x1B[1m");
-                printf("SCORE");
-                printf(RESET);
+                put('\t');
+                print("\x1B[1m");
+                print("SCORE");
+                print(RESET);
             }
             if(y == 1)
             {
-                putchar('\t');
-                printf("\x1B[1m");
-                printf("%d", score);
-                printf(RESET);
+                put('\t');
+                print("\x1B[1m");
+                print("%d", score);
+                print(RESET);
             }
             
             
         }
-        printf(RESET);
+        print(RESET);
 
         // show next piece
         gotoxy(22, 5);
-        printf("\t\x1B[1mNEXT:%s", RESET);
+        print("\t\x1B[1mNEXT:%s", RESET);
         struct piece nextPiece = listOfPieces[next];
         for(int i = 0; i < 4; i++)
         {
             gotoxy(27 + nextPiece.xOffset[i], 8 + nextPiece.yOffset[i]);
-            printf(RESET);
-            printf("%s0", colors[next]);
+            print(RESET);
+            print("%s0", colors[next]);
         }
-        printf(RESET);
+        print(RESET);
         
         //for(int i = 0; i < 4; i++)
         //{
-        //    printf("%d, %d\n", _piece.xOffset[i], _piece.yOffset[i]);
+        //    print("%d, %d\n", _piece.xOffset[i], _piece.yOffset[i]);
         //}
-        //printf("%d, %d\n", pX, pY);
+        //print("%d, %d\n", pX, pY);
 
         for (int i = 0; i < 10; i++)
         {
@@ -384,7 +410,7 @@ int main()
         gotoxy(0, 23);
         t = clock() - t; 
         double time_taken = ((double)t)/CLOCKS_PER_SEC;
-        printf("\t\x1B[1mfps: %f%s\n", 1 / time_taken, RESET);
+        print("\t\x1B[1mfps: %f%s\n", 1 / time_taken, RESET);
         if(1000/10 - (1000*time_taken) >= 0)
             Sleep(1000/10 - (1000*time_taken));
         else
@@ -395,7 +421,7 @@ int main()
 
     }
     gotoxy(0, 22);
-    printf("\t| %sYou lost%s |", RED, RESET);
+    print("\t| %sYou lost%s |", RED, RESET);
     
     return 0;
 }
