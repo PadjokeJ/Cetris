@@ -21,7 +21,7 @@
 #define WHT   "\x1B[37m"
 #define RESET "\x1B[0m"
 
-#define gotoxy(x,y) print("\033[%d;%dH", (y), (x))
+#define gotoxy(x,y) printf("\033[%d;%dH", (y), (x))
 
 char* colors[] = 
 {
@@ -61,24 +61,12 @@ void print(const char *format, ...){
         vprintf(format, args);
     #endif
     #ifdef __unix__
-        vprintw(format, args);
+        printw(format, args);
         refresh();
     #endif
 
     va_end(args);
 }
-
-void put(int str)
-{
-    #ifdef _WIN32
-        putchar(str);
-    #endif
-    #ifdef __unix__
-        addch(str);
-    #endif
-}
-
-
 
 int main()
 {
@@ -322,8 +310,8 @@ int main()
         for (int y = 0; y < 20; y++)
         {
             print("\n");
-            put('\t');
-            put('|');
+            print("\t");
+            print("|");
             for (int x = 0; x < width; x++)
             {
                 bool renderO = false;
@@ -341,7 +329,7 @@ int main()
                 if (renderO)
                 {
                     print("%s", colors[color]);
-                    put('0');
+                    print("0");
                     print(RESET);
                 }
                 else
@@ -351,27 +339,27 @@ int main()
                     if(board.square[pos] >= 0)
                     {
                         print("%s", colors[board.square[y * 10 + x]]);
-                        put('&');
+                        print("&");
                         print(RESET);
                     }
                     else
                     {
                         print(RESET);
-                        put('.');
+                        print(".");
                     }
                 }
             }
-            put('|');
+            print("|");
             if(y == 0)
             {
-                put('\t');
+                print("\t");
                 print("\x1B[1m");
                 print("SCORE");
                 print(RESET);
             }
             if(y == 1)
             {
-                put('\t');
+                print("\t");
                 print("\x1B[1m");
                 print("%d", score);
                 print(RESET);
