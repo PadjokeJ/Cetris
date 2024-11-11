@@ -333,13 +333,7 @@ int main()
         print("%sT%sE%sT%sR%sI%sS%s  |", BLU, MAG, RED, YEL, GRN, CYN, RESET);
         for (int y = 0; y < 20; y++)
         {
-<<<<<<< HEAD
             escseq("\n\t|");
-=======
-            print("\n");
-	    printf("\t|");
-	    refresh();
->>>>>>> ab575deaec5453a8f4fadd63097a066b46baf1b8
             for (int x = 0; x < width; x++)
             {
                 bool renderO = false;
