@@ -5,6 +5,9 @@
 	#include <conio.h>
 	#include <windows.h>
 #endif
+#ifdef __unix__
+	#include <curses.h>
+#endif
 #include <stdbool.h>
 
 #define pieces 6
@@ -29,14 +32,13 @@ char* colors[] =
     MAG,
     CYN
 };
-
+#ifdef _WIN32
 char ARROW_LEFT = 37;
 char ARROW_UP = 38;
 char ARROW_RIGHT = 39;
 char ARROW_DOWN = 40;
 char SPACE = 32;
-
-
+#endif
 
 struct piece
 {
@@ -54,6 +56,13 @@ struct Board
 
 int main()
 {
+    #ifdef __unix__
+    initscr();
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
+    nodelay(stdscr, TRUE);
+    #endif
     srand(time(NULL));
 
     struct Board board;
@@ -169,7 +178,24 @@ int main()
         {
             //fall down
         }
-#endif
+        #endif
+        #ifdef __unix__
+	int ch = getch();
+	if (ch != ERR){
+            if (ch == KEY_UP){
+	        //rotate
+	    }
+	    if (ch == KEY_LEFT){
+                pX--;
+	    }
+	    if (ch == KEY_RIGHT){
+                pX++;
+	    }
+	    if (ch == KEY_DOWN){
+                pY++;
+	    }
+	}
+        #endif
         ticker++;
         if(ticker > maxTick)
         {
@@ -269,7 +295,7 @@ int main()
         printf("\t|  \x1B[1m%sT%sE%sT%sR%sI%sS%s  |", BLU, MAG, RED, YEL, GRN, CYN, RESET);
         for (int y = 0; y < 20; y++)
         {
-            printf("              \n");
+            printf("\n");
             putchar('\t');
             putchar('|');
             for (int x = 0; x < width; x++)
@@ -362,7 +388,10 @@ int main()
         if(1000/10 - (1000*time_taken) >= 0)
             Sleep(1000/10 - (1000*time_taken));
         else
-           Sleep(1000/10); 
+           Sleep(1000/10);
+#ifdef __unix__
+        refresh();
+#endif	
 
     }
     gotoxy(0, 22);
