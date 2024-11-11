@@ -1,8 +1,10 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>
-#include <windows.h>
+#ifdef _WIN32
+	#include <conio.h>
+	#include <windows.h>
+#endif
 #include <stdbool.h>
 
 #define pieces 6
@@ -46,7 +48,9 @@ struct Board
 {
     int square[200];
 };
-
+#ifdef __unix__
+#define Sleep(t) (nanosleep((const struct timespec[]){{0, 1000000L*(t)}}, NULL))
+#endif
 
 int main()
 {
@@ -138,7 +142,7 @@ int main()
             generatePiece = false;
         }
 
-        
+	#ifdef _WIN32
         if (GetAsyncKeyState(ARROW_LEFT) & 0x8000)
         {
             pX--;
@@ -165,6 +169,7 @@ int main()
         {
             //fall down
         }
+#endif
         ticker++;
         if(ticker > maxTick)
         {
