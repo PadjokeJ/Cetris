@@ -315,7 +315,9 @@ int main()
         printf("\t|  \x1B[1m%sT%sE%sT%sR%sI%sS%s  |", BLU, MAG, RED, YEL, GRN, CYN, RESET);
         for (int y = 0; y < 20; y++)
         {
-            print("\n\t|");
+            print("\n");
+	    printf("\t|");
+	    refresh();
             for (int x = 0; x < width; x++)
             {
                 bool renderO = false;
