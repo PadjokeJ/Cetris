@@ -7,7 +7,6 @@
 #endif
 #ifdef __unix__
 	#include <curses.h>
-    start_colors()
 #endif
 #include <stdbool.h>
 
@@ -24,13 +23,15 @@
     #define RESET "\x1B[0m"
 #endif
 #ifdef __unix__
-    init_pair(1, COLOR_RED)
-    init_pair(2, COLOR_GREEN)
-    init_pair(3, COLOR_YELLOW)
-    init_pair(4, COLOR_BLUE)
-    init_pair(5, COLOR_MAGENTA)
-    init_pair(6, COLOR_CYAN)
-    init_pair(7, COLOR_WHITE)
+    initscr();
+    int start_color();
+    init_pair(1, COLOR_RED, COLOR_BLACK);
+    init_pair(2, COLOR_GREEN);
+    init_pair(3, COLOR_YELLOW);
+    init_pair(4, COLOR_BLUE);
+    init_pair(5, COLOR_MAGENTA);
+    init_pair(6, COLOR_CYAN);
+    init_pair(7, COLOR_WHITE);
 
     #define RED 1
     #define GRN 2
@@ -48,9 +49,10 @@
 #endif
 #ifdef __unix__
     #define gotoxy(x,y) move((y), (x))
-    #define bright() (void(0))
+    #define bright() ((void)0)
 #endif
 
+#ifdef _WIN32
 char* colors[] = 
 {
     RED,
@@ -60,12 +62,22 @@ char* colors[] =
     MAG,
     CYN
 };
-#ifdef _WIN32
+
 char ARROW_LEFT = 37;
 char ARROW_UP = 38;
 char ARROW_RIGHT = 39;
 char ARROW_DOWN = 40;
 char SPACE = 32;
+#endif
+#ifdef __unix__
+int colors[] = {
+	RED,
+	GRN,
+	YEL,
+	BLU,
+	MAG,
+	CYN
+};
 #endif
 
 struct piece
@@ -90,7 +102,6 @@ void print(const char *format, ...){
     #endif
     #ifdef __unix__
         printw(format, args);
-        refresh();
     #endif
 
     va_end(args);
@@ -104,7 +115,7 @@ void col(const char *str)
 #endif
 
 #ifdef __unix__
-void col(const int *i)
+void col(int i)
 {
     attron(COLOR_PAIR(i));
 }
@@ -118,7 +129,7 @@ void reset(const char *str)
 #endif
 
 #ifdef __unix__
-void col(const int *i)
+void reset(int i)
 {
     attroff(COLOR_PAIR(i));
 }
@@ -129,7 +140,6 @@ void col(const int *i)
 int main()
 {
     #ifdef __unix__
-    initscr();
     cbreak();
     noecho();
     keypad(stdscr, TRUE);
