@@ -23,16 +23,6 @@
     #define RESET "\x1B[0m"
 #endif
 #ifdef __unix__
-    initscr();
-    int start_color();
-    init_pair(1, COLOR_RED, COLOR_BLACK);
-    init_pair(2, COLOR_GREEN);
-    init_pair(3, COLOR_YELLOW);
-    init_pair(4, COLOR_BLUE);
-    init_pair(5, COLOR_MAGENTA);
-    init_pair(6, COLOR_CYAN);
-    init_pair(7, COLOR_WHITE);
-
     #define RED 1
     #define GRN 2
     #define YEL 3
@@ -140,6 +130,15 @@ void reset(int i)
 int main()
 {
     #ifdef __unix__
+    initscr();
+    int start_color();
+    init_pair(1, COLOR_RED,     COLOR_BLACK);
+    init_pair(2, COLOR_GREEN,   COLOR_BLACK);
+    init_pair(3, COLOR_YELLOW,  COLOR_BLACK);
+    init_pair(4, COLOR_BLUE,    COLOR_BLACK);
+    init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(6, COLOR_CYAN,    COLOR_BLACK);
+    init_pair(7, COLOR_WHITE,   COLOR_BLACK);
     cbreak();
     noecho();
     keypad(stdscr, TRUE);
