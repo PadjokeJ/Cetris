@@ -7,25 +7,48 @@
 #endif
 #ifdef __unix__
 	#include <curses.h>
+    start_colors()
 #endif
 #include <stdbool.h>
 
 #define pieces 6
 
-#define RED   "\x1B[31m"
-#define GRN   "\x1B[32m"
-#define YEL   "\x1B[33m"
-#define BLU   "\x1B[34m"
-#define MAG   "\x1B[35m"
-#define CYN   "\x1B[36m"
-#define WHT   "\x1B[37m"
-#define RESET "\x1B[0m"
+#ifdef _WIN32
+    #define RED   "\x1B[31m"
+    #define GRN   "\x1B[32m"
+    #define YEL   "\x1B[33m"
+    #define BLU   "\x1B[34m"
+    #define MAG   "\x1B[35m"
+    #define CYN   "\x1B[36m"
+    #define WHT   "\x1B[37m"
+    #define RESET "\x1B[0m"
+#endif
+#ifdef __unix__
+    init_pair(1, COLOR_RED)
+    init_pair(2, COLOR_GREEN)
+    init_pair(3, COLOR_YELLOW)
+    init_pair(4, COLOR_BLUE)
+    init_pair(5, COLOR_MAGENTA)
+    init_pair(6, COLOR_CYAN)
+    init_pair(7, COLOR_WHITE)
+
+    #define RED 1
+    #define GRN 2
+    #define YEL 3
+    #define BLU 4
+    #define MAG 5
+    #define CYN 6
+    #define WHT 7
+#endif
 
 #ifdef _WIN32
     #define gotoxy(x,y) printf("\033[%d;%dH", (y), (x))
+    #define clear() (printf("\033[H\033[J"))
+    #define bright() (printf("\x1B[1m"))
 #endif
 #ifdef __unix__
     #define gotoxy(x,y) move((y), (x))
+    #define bright() (void(0))
 #endif
 
 char* colors[] = 
@@ -73,15 +96,34 @@ void print(const char *format, ...){
     va_end(args);
 }
 
-void escseq(const char *str)
+#ifdef _WIN32
+void col(const char *str)
 {
-    #ifdef _WIN32
-        printf(str);
-    #endif
-    #ifdef __unix__
-        addstr(str);
-    #endif
+    printf(str);
 }
+#endif
+
+#ifdef __unix__
+void col(const int *i)
+{
+    attron(COLOR_PAIR(i));
+}
+#endif
+
+#ifdef _WIN32
+void reset(const char *str)
+{
+    printf(RESET);
+}
+#endif
+
+#ifdef __unix__
+void col(const int *i)
+{
+    attroff(COLOR_PAIR(i));
+}
+#endif
+
 
 
 int main()
@@ -326,14 +368,20 @@ int main()
         
         int pos;
 
-        escseq("\033[H\033[J");
+        clear();
         
         print("\t|  ");
-        escseq("\x1B[1m");
-        print("%sT%sE%sT%sR%sI%sS%s  |", BLU, MAG, RED, YEL, GRN, CYN, RESET);
+        bright();
+        col(BLU); print("T"); reset(BLU); 
+        col(MAG); print("E"); reset(MAG); 
+        col(RED); print("T"); reset(RED);
+        col(YEL); print("R"); reset(YEL);
+        col(GRN); print("I"); reset(GRN);
+        col(CYN); print("S"); reset(CYN);
+        print("  |");
         for (int y = 0; y < 20; y++)
         {
-            escseq("\n\t|");
+            print("\n\t|");
             for (int x = 0; x < width; x++)
             {
                 bool renderO = false;
@@ -350,9 +398,9 @@ int main()
                 }
                 if (renderO)
                 {
-                    printf("%s", colors[color]);
+                    col(colors[color]);
                     print("0");
-                    escseq(RESET);
+                    reset(colors[color]);
                 }
                 else
                 {
@@ -360,13 +408,12 @@ int main()
                     pos = y * 10 + x;
                     if(board.square[pos] >= 0)
                     {
-                        printf("%s", colors[board.square[y * 10 + x]]);
+                        col(colors[board.square[y * 10 + x]]);
                         print("&");
-                        escseq(RESET);
+                        reset(colors[board.square[y * 10 + x]]);
                     }
                     else
                     {
-                        escseq(RESET);
                         print(".");
                     }
                 }
@@ -375,42 +422,38 @@ int main()
             if(y == 0)
             {
                 print("\t");
-                escseq("\x1B[1m");
+                bright();
+                col(RED);
                 print("SCORE");
-                escseq(RESET);
+                reset(RED);
             }
             if(y == 1)
             {
                 print("\t");
-                escseq("\x1B[1m");
+                bright();
+                col(RED);
                 print("%d", score);
-                escseq(RESET);
+                reset(RED);
             }
             
             
         }
-        print(RESET);
 
         // show next piece
         gotoxy(22, 5);
-        escseq("\t");
-        escseq("\x1B[1m");
+        print("\t");
+        bright();
+        col(BLU);
         print("NEXT:");
-        escseq(RESET);
+        reset(BLU);
         struct piece nextPiece = listOfPieces[next];
         for(int i = 0; i < 4; i++)
         {
             gotoxy(27 + nextPiece.xOffset[i], 8 + nextPiece.yOffset[i]);
-            escseq(RESET);
-            print("%s0", colors[next]);
+            col(colors[next]);
+            print("0");
+            reset(colors[next]);
         }
-        escseq(RESET);
-        
-        //for(int i = 0; i < 4; i++)
-        //{
-        //    print("%d, %d\n", _piece.xOffset[i], _piece.yOffset[i]);
-        //}
-        //print("%d, %d\n", pX, pY);
 
         for (int i = 0; i < 10; i++)
         {
@@ -424,19 +467,23 @@ int main()
         t = clock() - t; 
         double time_taken = ((double)t)/CLOCKS_PER_SEC;
         print("\t");
-        escseq("\x1B[1m");
-        printf("fps: %f%s\n", 1 / time_taken, RESET);
+        bright();
+        print("fps: %f\n", 1 / time_taken);
         if(1000/10 - (1000*time_taken) >= 0)
             Sleep(1000/10 - (1000*time_taken));
         else
            Sleep(1000/10);
-#ifdef __unix__
+        #ifdef __unix__
         refresh();
-#endif	
+        #endif	
 
     }
     gotoxy(0, 22);
-    print("\t| %sYou lost%s |", RED, RESET);
+    print("\t| ");
+    col(RED);
+    print("You lost");
+    reset(RED);
+    print(" |");
     
     return 0;
 }
