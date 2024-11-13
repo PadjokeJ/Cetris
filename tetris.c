@@ -92,6 +92,7 @@ void print(const char *format, ...){
     #endif
     #ifdef __unix__
         printw(format, args);
+	refresh();
     #endif
 
     va_end(args);
@@ -131,7 +132,7 @@ int main()
 {
     #ifdef __unix__
     initscr();
-    int start_color();
+    start_color();
     init_pair(1, COLOR_RED,     COLOR_BLACK);
     init_pair(2, COLOR_GREEN,   COLOR_BLACK);
     init_pair(3, COLOR_YELLOW,  COLOR_BLACK);
@@ -378,7 +379,6 @@ int main()
         int pos;
 
         clear();
-        
         print("\t|  ");
         bright();
         col(BLU); print("T"); reset(BLU); 
@@ -477,7 +477,7 @@ int main()
         double time_taken = ((double)t)/CLOCKS_PER_SEC;
         print("\t");
         bright();
-        print("fps: %f\n", 1 / time_taken);
+        printf("fps: %f\n", 1 / time_taken);
         if(1000/10 - (1000*time_taken) >= 0)
             Sleep(1000/10 - (1000*time_taken));
         else
