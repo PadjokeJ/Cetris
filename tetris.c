@@ -1,3 +1,16 @@
+/* ----CETRIS (2024) ----
+* No copyright, but this code was made by padjokej (aka padjokej.dev) while learning to use C.
+*
+* Made with no prior C experience (so far I had only remade some small python projects in C. 
+* This was mostly made in order for me to get familiar with the inner workings of the language, it's variable types, quirks and more.
+* The code ahead is mostly undocumented, and very badly made, so beware your eyes, and don't learn from me
+*
+* Chat-GPT was used to make this program also run on unix systems, some things still don't work there (I blame ncurses' print function for not displaying variables right)
+*/
+
+
+
+
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
