@@ -1,18 +1,18 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef _WIN32
+#ifdef _WIN32 /* libraries exclusive to windows OS */
 	#include <conio.h>
 	#include <windows.h>
 #endif
-#ifdef __unix__
+#ifdef __unix__ /* libraries which are only needed when conio and windows.h are unavailable, ie linux systems */
 	#include <curses.h>
 #endif
 #include <stdbool.h>
 
-#define pieces 6
+#define pieces 6 /* we have 6 types of pieces, tetris usually has 7, I just hate the square piece that much */
 
-#ifdef _WIN32
+#ifdef _WIN32 /* the escape sequences which are printed to the screen for color */
     #define RED   "\x1B[31m"
     #define GRN   "\x1B[32m"
     #define YEL   "\x1B[33m"
@@ -22,7 +22,7 @@
     #define WHT   "\x1B[37m"
     #define RESET "\x1B[0m"
 #endif
-#ifdef __unix__
+#ifdef __unix__ /* the index of colors for unix, black, which is unneeded, is 0 */
     #define RED 1
     #define GRN 2
     #define YEL 3
@@ -32,14 +32,14 @@
     #define WHT 7
 #endif
 
-#ifdef _WIN32
+#ifdef _WIN32 /* declare windows specific functions */
     #define gotoxy(x,y) printf("\033[%d;%dH", (y), (x))
-    #define clear() (printf("\033[H\033[J"))
+    #define clear() (printf("\033[H\033[J")) /* escape sequence used to clear the screen */
     #define bright() (printf("\x1B[1m"))
 #endif
-#ifdef __unix__
+#ifdef __unix__ /* declare unix specific functions */
     #define gotoxy(x,y) move((y), (x))
-    #define bright() ((void)0)
+    #define bright() ((void)0) // I seriously have no clue how to make bright terminal colors in unix
 #endif
 
 #ifdef _WIN32
@@ -51,8 +51,9 @@ char* colors[] =
     BLU,
     MAG,
     CYN
-};
+}; /* array of escape sequences for colors */
 
+/* ascii keycodes for the arrow keys */
 char ARROW_LEFT = 37;
 char ARROW_UP = 38;
 char ARROW_RIGHT = 39;
@@ -67,20 +68,20 @@ int colors[] = {
 	BLU,
 	MAG,
 	CYN
-};
+}; /* array of color indexes */
 #endif
 
-struct piece
+struct piece /* structure for x and y of each "square" in a piece */
 {
-    int xOffset[4];
-    int yOffset[4];
+    int xOffset[4]; /* offset --> we offset from the x position of the player cursor */
+    int yOffset[4]; /* offset --> we offset from the y position of the player cursor */
 };
 
-struct Board
+struct Board /* 10 x 20 board, 200 squares --> the x coordinated is only reflected on the last digit of the three digit-long board. the first two are used for the y coordinate */
 {
     int square[200];
 };
-#ifdef __unix__
+#ifdef __unix__ /* we declare a sleep function that is already in a windows header, in a different form */
 #define Sleep(t) (nanosleep((const struct timespec[]){{0, 1000000L*(t)}}, NULL))
 #endif
 
@@ -98,28 +99,28 @@ void print(const char *format, ...){
     va_end(args);
 }
 
-#ifdef _WIN32
+#ifdef _WIN32 /* on windows, we print an escape sequence to make the text colored */
 void col(const char *str)
 {
     printf(str);
 }
 #endif
 
-#ifdef __unix__
+#ifdef __unix__ /* on unix systems, we use a ncurses function to color the text, using the color indexes previously declared */
 void col(int i)
 {
     attron(COLOR_PAIR(i));
 }
 #endif
 
-#ifdef _WIN32
+#ifdef _WIN32 /* function used to remove color, we don't care about which color came beforehand, unlike unix */
 void reset(const char *str)
 {
     printf(RESET);
 }
 #endif
 
-#ifdef __unix__
+#ifdef __unix__ /* we have to "turn off" a color to make the text the default color */
 void reset(int i)
 {
     attroff(COLOR_PAIR(i));
@@ -130,7 +131,7 @@ void reset(int i)
 
 int main()
 {
-    #ifdef __unix__
+    #ifdef __unix__ /* we initialize the ncurses terminal for unix */
     initscr();
     start_color();
     init_pair(1, COLOR_RED,     COLOR_BLACK);
@@ -150,9 +151,10 @@ int main()
     struct Board board;
     for (int r = 0; r < 200; r++)
     {
-        board.square[r] = -1;
+        board.square[r] = -1; /* every square in the board is empty (=-1) */
     }
 
+    /* Here we declare all the pieces and their coordinates of squares, one by one. Pieces names usually describe them well */
     struct piece lPiece1;
     lPiece1.xOffset[0] = 1;     lPiece1.yOffset[0] = 0;
     lPiece1.xOffset[1] = 0;     lPiece1.yOffset[1] = 0;
