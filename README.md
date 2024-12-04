@@ -10,19 +10,27 @@ The code is cross platform across windows and unix based machines, however it ne
 
 To build on Windows, open the Command Prompt, navigate to the Cetris folder, and then enter this command  
 
-```gcc tetris.c -o tetris.exe```
+```sh
+gcc tetris.c -o tetris.exe
+```
 
 and then, to run the compiled version do  
 
-```tetris.exe```
+```sh
+tetris.exe
+```
 
 ### Linux
 
 To build on Linux, you have to have the ncurses library installed.  
 Once it is installed, open the terminal, navigate to the Cetris folder, and then enter the following command  
 
-```gcc tetris.c -o tetris -lncurses```
+```console
+gcc tetris.c -o tetris -lncurses
+```
 
 and then, to run it in the terminal, enter  
 
-```./tetris```
+```console
+./tetris
+```
